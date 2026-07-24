@@ -25,7 +25,7 @@ export default function AccountPage() {
             <h1 className="text-3xl md:text-5xl font-bold font-heading uppercase tracking-wider mb-2">
               My <span className="text-primary">Account</span>
             </h1>
-            <p className="text-muted-foreground font-medium">Welcome back, {userProfileData.firstName}!</p>
+            <p className="text-muted-foreground font-medium">Welcome back, {userProfileData.name}!</p>
           </div>
           <Button variant="outline" className="mt-4 md:mt-0 gap-2" onClick={handleLogout}>
             <LogOut className="w-4 h-4" /> Sign Out
@@ -167,11 +167,11 @@ export default function AccountPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium">First Name</label>
-                      <Input defaultValue={userProfileData.firstName} className="bg-background" />
+                      <Input defaultValue={userProfileData.name.split(" ")[0]} className="bg-background" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Last Name</label>
-                      <Input defaultValue={userProfileData.lastName} className="bg-background" />
+                      <Input defaultValue={userProfileData.name.split(" ").slice(1).join(" ")} className="bg-background" />
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -207,7 +207,9 @@ export default function AccountPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="bg-secondary p-6 rounded-sm border border-primary/50 relative">
                     <div className="absolute top-4 right-4 text-xs font-bold bg-primary text-primary-foreground px-2 py-1 rounded-sm uppercase tracking-wider">Default</div>
-                    <h3 className="font-bold text-lg mb-2">{userProfileData.firstName} {userProfileData.lastName}</h3>
+                    <h3 className="font-bold text-lg mb-2">
+  {userProfileData.name}
+</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                       123 Fitness Hub, Sector 45<br />
                       Gurugram, Haryana 122003<br />
