@@ -6,7 +6,7 @@ import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { userProfileData, orderHistoryData } from "@/data/mock"
+import { userProfileData, ordersData } from "@/data/mock"
 
 type Tab = "dashboard" | "orders" | "addresses" | "profile" | "wishlist"
 
@@ -89,7 +89,7 @@ export default function AccountPage() {
                   <div className="bg-secondary p-6 rounded-sm border border-border">
                     <Package className="w-8 h-8 text-primary mb-4" />
                     <h3 className="font-bold text-lg mb-1">Total Orders</h3>
-                    <p className="text-3xl font-mono text-muted-foreground">{orderHistoryData.length}</p>
+                    <p className="text-3xl font-mono text-muted-foreground">{ordersData.length}</p>
                   </div>
                   <div className="bg-secondary p-6 rounded-sm border border-border">
                     <MapPin className="w-8 h-8 text-primary mb-4" />
@@ -100,7 +100,7 @@ export default function AccountPage() {
                 
                 <div className="pt-8">
                   <h3 className="text-xl font-bold font-heading uppercase tracking-wide mb-6">Recent Order</h3>
-                  {orderHistoryData.slice(0, 1).map((order) => (
+                  {ordersData.slice(0, 1).map((order) => (
                     <div key={order.id} className="bg-secondary p-6 rounded-sm border border-border flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                       <div>
                         <p className="font-medium text-sm text-muted-foreground">Order #{order.id}</p>
@@ -124,7 +124,7 @@ export default function AccountPage() {
             {activeTab === "orders" && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <h2 className="text-2xl font-bold font-heading uppercase tracking-wide mb-6">Order History</h2>
-                {orderHistoryData.map((order) => (
+                {ordersData.map((order) => (
                   <div key={order.id} className="bg-secondary p-6 rounded-sm border border-border space-y-6">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border/50 pb-4">
                       <div>
