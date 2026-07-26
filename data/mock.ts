@@ -16,7 +16,7 @@ export const productData = {
     { id: "v2", name: "Vyro Gold", color: "#D69E2E" }
   ],
   specifications: [
-    { label: "Material", value: "High-density premium cotton with neoprene padding" },
+    { label: "Material", value: "High-density premium cotton" },
     { label: "Length", value: "24 inches" },
     { label: "Weight", value: "150g per pair" },
     { label: "Compatibility", value: "Olympic barbells, dumbbells, pull-up bars" },
@@ -51,7 +51,7 @@ export const reviewsData = [
     rating: 5,
     date: "2023-09-22",
     title: "Premium quality",
-    content: "You can feel the quality right out of the box. The neoprene padding makes heavy shrugs completely pain-free for my wrists."
+    content: "You can feel the quality right out of the box. The foam padding makes heavy shrugs completely pain-free for my wrists."
   },
   {
     id: "r3",

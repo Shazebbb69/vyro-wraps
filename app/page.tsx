@@ -3,25 +3,45 @@
 import * as React from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { ShieldCheck, Dumbbell, Zap, Clock, Star, CheckCircle, ArrowRight } from "lucide-react"
+import {
+  ShieldCheck,
+  Dumbbell,
+  Zap,
+  Clock,
+  Star,
+  CheckCircle,
+  ArrowRight,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion"
 import { ReviewCard } from "@/components/product/ReviewCard"
 
-import { productData, reviewsData, faqData } from "@/data/mock"
+import { reviewsData } from "@/data/mock"
+import {
+  benefits,
+  specifications,
+  howToUse,
+  faqData,
+} from "@/data/siteContent"
 
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* 2. Hero Section */}
-      <section className="relative h-[90vh] min-h-[600px] flex items-center justify-center overflow-hidden">
+      {/* Hero */}
+      <section className="relative h-[90vh] min-h-150 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="w-full h-full bg-[url('https://placehold.co/1920x1080/111111/FFFFFF?text=Hero+Image')] bg-cover bg-center opacity-40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+          <div
+  className="w-full h-full bg-[url('/hero.png')] bg-cover bg-center opacity-40"
+/>
+          <div className="absolute inset-0 bg-linear-to-t from-background via-background/60 to-transparent" />
         </div>
-        
+
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -32,32 +52,40 @@ export default function HomePage() {
             <h1 className="text-6xl sm:text-7xl md:text-8xl font-bold uppercase tracking-wider text-foreground font-heading">
               Self Applying <span className="text-primary">Lifting Straps</span>
             </h1>
+
             <p className="text-xl sm:text-2xl text-muted-foreground font-medium max-w-2xl mx-auto">
               Maximum Support. Enhanced Grip. Built To Last.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Link href="/product" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto min-w-[200px]">
+                <Button size="lg" className="w-full sm:w-auto min-w-50">
                   Shop Now
                 </Button>
               </Link>
+
               <Link href="#how-to-use" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto min-w-[200px]">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto min-w-50"
+                >
                   See How It Works
                 </Button>
               </Link>
             </div>
-            
+
             <div className="flex items-center justify-center gap-6 pt-12 text-sm text-muted-foreground font-medium">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-primary" />
                 <span>Premium Quality</span>
               </div>
+
               <div className="flex items-center gap-2">
                 <Star className="w-5 h-5 text-primary fill-primary" />
                 <span>Top Rated</span>
               </div>
+
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-primary" />
                 <span>Secure Checkout</span>
@@ -67,11 +95,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. Benefits Section */}
+      {/* Benefits */}
       <section className="py-24 bg-secondary">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {productData.benefits.map((benefit, idx) => (
+            {benefits.map((benefit, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
@@ -86,34 +114,42 @@ export default function HomePage() {
                   {idx === 2 && <Zap className="w-8 h-8 text-primary" />}
                   {idx === 3 && <Clock className="w-8 h-8 text-primary" />}
                 </div>
-                <h3 className="text-xl font-bold mb-3 font-heading tracking-wide uppercase">{benefit.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{benefit.description}</p>
+
+                <h3 className="text-xl font-bold mb-3 font-heading tracking-wide uppercase">
+                  {benefit.title}
+                </h3>
+
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {benefit.description}
+                </p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 4. Product Showcase */}
+      {/* Product Showcase */}
       <section className="py-24 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-16">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               className="w-full lg:w-1/2 relative group"
             >
               <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
+
               <div className="relative aspect-square w-full bg-secondary rounded-sm overflow-hidden border border-border">
-                <img 
-                  src="https://placehold.co/800x800/1A1A1A/FFFFFF?text=Product+Showcase" 
-                  alt="Vyro Wraps"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
+                <img
+  src="/promo-banner.jpeg"
+  alt="Vyro Wraps"
+  className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
+/>
               </div>
             </motion.div>
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -122,24 +158,26 @@ export default function HomePage() {
               <h2 className="text-4xl md:text-5xl font-bold font-heading uppercase tracking-wider">
                 Engineered for <span className="text-primary">Performance</span>
               </h2>
+
               <p className="text-lg text-muted-foreground">
-                Vyro Wraps are designed to take your heavy lifts to the next level. By securing your grip to the bar, you can focus entirely on the target muscles without worrying about your forearms giving out.
+                Vyro Wraps are designed to take your heavy lifts to the next
+                level. By securing your grip to the bar, you can focus entirely
+                on the target muscles without worrying about your forearms
+                giving out.
               </p>
-              
+
               <ul className="space-y-4">
                 {[
                   "100% Premium Cotton with reinforced stitching",
-                  "Neoprene padding for ultimate wrist comfort",
                   "Self-applying design for one-handed setup",
-                  "Rated for 500lbs+ of tension"
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-primary shrink-0" />
                     <span className="font-medium">{item}</span>
                   </li>
                 ))}
               </ul>
-              
+
               <Link href="/product" className="inline-block mt-4">
                 <Button size="lg" className="gap-2">
                   View Full Specs <ArrowRight className="w-4 h-4" />
@@ -149,8 +187,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* 5. Why Choose & 6. Specs */}
+            {/* Why Choose & Specifications */}
       <section className="py-24 bg-secondary">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -158,39 +195,66 @@ export default function HomePage() {
               The <span className="text-primary">Vyro</span> Difference
             </h2>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <div className="space-y-8">
-              <h3 className="text-2xl font-bold font-heading tracking-wide uppercase border-b border-border pb-4">Standard Straps vs Vyro Wraps</h3>
+              <h3 className="text-2xl font-bold font-heading tracking-wide uppercase border-b border-border pb-4">
+                Standard Straps vs Vyro Wraps
+              </h3>
+
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-destructive/20 text-destructive flex items-center justify-center rounded-sm shrink-0">
                     <XIcon className="w-6 h-6" />
                   </div>
+
                   <div>
                     <h4 className="font-bold mb-1">Standard Straps</h4>
-                    <p className="text-sm text-muted-foreground">Require two hands to setup, dig into wrists, fray easily under heavy loads.</p>
+                    <p className="text-sm text-muted-foreground">
+                      Require two hands to setup, dig into wrists, fray easily
+                      under heavy loads.
+                    </p>
                   </div>
                 </div>
+
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-success/20 text-success flex items-center justify-center rounded-sm shrink-0">
+                  <div className="w-12 h-12 bg-green-500/20 text-green-500 flex items-center justify-center rounded-sm shrink-0">
                     <CheckCircle className="w-6 h-6" />
                   </div>
+
                   <div>
                     <h4 className="font-bold mb-1">Vyro Wraps</h4>
-                    <p className="text-sm text-muted-foreground">Self-applying loop for one-handed setup, plush neoprene padding, heavy-duty construction.</p>
+                    <p className="text-sm text-muted-foreground">
+                      Self-applying loop for one-handed setup, plush foam
+                      padding and heavy-duty construction.
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-8">
-              <h3 className="text-2xl font-bold font-heading tracking-wide uppercase border-b border-border pb-4">Specifications</h3>
+              <h3 className="text-2xl font-bold font-heading tracking-wide uppercase border-b border-border pb-4">
+                Specifications
+              </h3>
+
               <div className="bg-background rounded-sm border border-border">
-                {productData.specifications.map((spec, i) => (
-                  <div key={i} className={`flex justify-between p-4 ${i !== productData.specifications.length - 1 ? 'border-b border-border' : ''}`}>
-                    <span className="font-medium text-muted-foreground">{spec.label}</span>
-                    <span className="font-bold text-right pl-4">{spec.value}</span>
+                {specifications.map((spec, i) => (
+                  <div
+                    key={i}
+                    className={`flex justify-between p-4 ${
+                      i !== specifications.length - 1
+                        ? "border-b border-border"
+                        : ""
+                    }`}
+                  >
+                    <span className="font-medium text-muted-foreground">
+                      {spec.label}
+                    </span>
+
+                    <span className="font-bold text-right pl-4">
+                      {spec.value}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -199,18 +263,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 7. How To Use */}
+      {/* How To Use */}
       <section id="how-to-use" className="py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-bold font-heading uppercase tracking-wider mb-4">
             How To <span className="text-primary">Apply</span>
           </h2>
+
           <p className="text-muted-foreground mb-16 max-w-2xl mx-auto">
-            Our innovative self-applying design means you spend less time setting up and more time lifting.
+            Our innovative self-applying design means you spend less time
+            setting up and more time lifting.
           </p>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {productData.howToUse.map((step) => (
+            {howToUse.map((step) => (
               <motion.div
                 key={step.step}
                 whileHover={{ y: -5 }}
@@ -219,46 +285,55 @@ export default function HomePage() {
                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-primary text-primary-foreground font-heading text-2xl flex items-center justify-center rounded-full border-4 border-background">
                   {step.step}
                 </div>
-                <h3 className="text-xl font-bold mb-3 font-heading tracking-wide uppercase">{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+
+                <h3 className="text-xl font-bold mb-3 font-heading tracking-wide uppercase">
+                  {step.title}
+                </h3>
+
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {step.description}
+                </p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 8. Customer Reviews */}
+      {/* Reviews */}
       <section className="py-24 bg-secondary">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold font-heading uppercase tracking-wider mb-4">
               Trusted by <span className="text-primary">Athletes</span>
             </h2>
+
             <div className="flex items-center justify-center gap-2">
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-5 h-5 fill-primary text-primary" />
                 ))}
               </div>
+
               <span className="font-medium">4.9/5 Average Rating</span>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {reviewsData.map((review) => (
               <ReviewCard key={review.id} {...review} />
             ))}
           </div>
-          
+
           <div className="text-center mt-12">
             <Link href="/reviews">
-              <Button variant="outline" size="lg">Read All Reviews</Button>
+              <Button variant="outline" size="lg">
+                Read All Reviews
+              </Button>
             </Link>
           </div>
         </div>
       </section>
-
-      {/* 9. FAQ */}
+            {/* FAQ */}
       <section className="py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
           <div className="text-center mb-12">
@@ -266,11 +341,18 @@ export default function HomePage() {
               Frequently Asked <span className="text-primary">Questions</span>
             </h2>
           </div>
-          
+
           <Accordion type="single" collapsible className="w-full space-y-4">
             {faqData.map((faq, i) => (
-              <AccordionItem key={i} value={`item-${i}`} className="bg-secondary px-6 rounded-sm border border-border/50">
-                <AccordionTrigger className="text-lg hover:no-underline">{faq.question}</AccordionTrigger>
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="bg-secondary px-6 rounded-sm border border-border/50"
+              >
+                <AccordionTrigger className="text-lg hover:no-underline">
+                  {faq.question}
+                </AccordionTrigger>
+
                 <AccordionContent className="text-base text-muted-foreground leading-relaxed">
                   {faq.answer}
                 </AccordionContent>

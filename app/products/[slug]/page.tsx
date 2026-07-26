@@ -1,9 +1,10 @@
 "use client"
 
 import * as React from "react"
+import { specifications, howToUse } from "@/data/siteContent";
 import { motion, AnimatePresence } from "framer-motion"
 import { Star, Truck, RefreshCcw, ShieldCheck, Minus, Plus, ShoppingCart, CreditCard } from "lucide-react"
-
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 import { Gallery } from "@/components/product/Gallery"
@@ -11,14 +12,46 @@ import { ReviewCard } from "@/components/product/ReviewCard"
 import { ProductCard } from "@/components/product/ProductCard"
 import { Badge } from "@/components/ui/badge"
 
-import { productData, reviewsData } from "@/data/mock"
+import { reviewsData } from "@/data/mock";
 
 export default function ProductPage() {
   const [quantity, setQuantity] = React.useState(1)
-  const [selectedVariant, setSelectedVariant] = React.useState(productData.variants[0])
+  const [product, setProduct] = React.useState<any>(null);
+const [selectedVariant, setSelectedVariant] = React.useState<any>({});
   const [isStickyVisible, setIsStickyVisible] = React.useState(false)
 
   React.useEffect(() => {
+    const fetchProduct = async () => {
+  const { data, error } = await supabase
+  
+    .from("products")
+    .select(`
+  *,
+  product_images(*),
+  product_variants(*)
+`)
+    .limit(1)
+
+
+    console.log("DATA:", data);
+    console.log(
+  supabase.storage
+    .from("products")
+    .getPublicUrl("vyro-wraps/main-product.jpg")
+);
+console.log("ERROR:", error);
+  if (!error && data) {
+   const product = data[0];
+
+setProduct(product);
+
+if (product?.product_variants?.length > 0) {
+  setSelectedVariant(product.product_variants[0]);
+}
+  }
+};
+
+fetchProduct();
     const handleScroll = () => {
       // Show sticky cart when scrolled past main add to cart button
       setIsStickyVisible(window.scrollY > 800)
@@ -38,7 +71,15 @@ export default function ProductPage() {
           {/* Left Column - Gallery */}
           <div className="w-full lg:w-1/2">
             <div className="sticky top-28">
-              <Gallery images={productData.images} />
+              <Gallery
+  images={
+    product?.product_images?.map((img: any) =>
+      supabase.storage
+        .from("products")
+        .getPublicUrl(img.image_url).data.publicUrl
+    ) ?? []
+  }
+/>
             </div>
           </div>
 
@@ -47,7 +88,7 @@ export default function ProductPage() {
             <div className="space-y-4">
               <Badge variant="default" className="text-xs uppercase tracking-widest px-3 py-1 mb-2">Best Seller</Badge>
               <h1 className="text-4xl md:text-5xl font-bold font-heading uppercase tracking-wide text-foreground">
-                {productData.name}
+                {product?.name}
               </h1>
               
               <div className="flex items-center gap-4">
@@ -62,32 +103,32 @@ export default function ProductPage() {
               </div>
 
               <div className="flex items-end gap-4 pt-4 border-t border-border/50">
-                <span className="text-4xl font-mono font-bold text-primary">₹{productData.price}</span>
+                <span className="text-4xl font-mono font-bold text-primary">₹{product?.price}</span>
                 <span className="text-xl font-mono text-muted-foreground line-through decoration-destructive/50 pb-1">
-                  ₹{productData.originalPrice}
+                  ₹{product?.compare_price}
                 </span>
                 <Badge variant="outline" className="ml-2 text-success border-success bg-success/10 mb-2">
-                  Save ₹{productData.originalPrice - productData.price}
+                  Save ₹{(product?.compare_price ?? 0) - (product?.price ?? 0)}
                 </Badge>
               </div>
               <p className="text-sm font-medium text-success flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4" /> {productData.stockStatus}
+                <ShieldCheck className="w-4 h-4" /> {product?.stock > 0 ? "In Stock" : "Out of Stock"}
               </p>
             </div>
 
             <p className="text-lg text-muted-foreground leading-relaxed">
-              {productData.description}
+              {product?.description}
             </p>
 
             <div className="space-y-4 pt-4">
-              <h3 className="font-heading text-xl uppercase tracking-wider">Color: {selectedVariant.name}</h3>
+              <h3 className="font-heading text-xl uppercase tracking-wider">Color: {selectedVariant?.color || "Default"}</h3>
               <div className="flex gap-4">
-                {productData.variants.map((variant) => (
+                {(product?.product_variants || []).map((variant: any) => (
                   <button
                     key={variant.id}
                     onClick={() => setSelectedVariant(variant)}
                     className={`w-12 h-12 rounded-full border-2 transition-all ${
-                      selectedVariant.id === variant.id 
+                      selectedVariant?.id === variant.id 
                         ? "border-primary ring-2 ring-primary ring-offset-2 ring-offset-background scale-110" 
                         : "border-transparent hover:border-border"
                     }`}
@@ -148,7 +189,7 @@ export default function ProductPage() {
                 <AccordionTrigger className="text-xl font-heading uppercase tracking-wider">Specifications</AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-2 pt-2">
-                    {productData.specifications.map((spec, i) => (
+                    {specifications.map((spec, i) => (
                       <div key={i} className="flex justify-between py-2 border-b border-border/30 last:border-0">
                         <span className="text-muted-foreground">{spec.label}</span>
                         <span className="font-medium text-right">{spec.value}</span>
@@ -178,42 +219,6 @@ export default function ProductPage() {
         </div>
       </div>
 
-      {/* Frequently Bought Together (Placeholder) */}
-      <section className="py-24 bg-secondary mt-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold font-heading uppercase tracking-wider">
-              Frequently Bought <span className="text-primary">Together</span>
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <ProductCard 
-              id="placeholder-1" 
-              name="Vyro Liquid Chalk" 
-              price={499} 
-              image="https://placehold.co/600x600/1A1A1A/FFFFFF?text=Liquid+Chalk" 
-            />
-            <ProductCard 
-              id="placeholder-2" 
-              name="Vyro Wrist Wraps" 
-              price={999} 
-              image="https://placehold.co/600x600/1A1A1A/FFFFFF?text=Wrist+Wraps" 
-            />
-             <ProductCard 
-              id="placeholder-3" 
-              name="Vyro Knee Sleeves" 
-              price={2499} 
-              image="https://placehold.co/600x600/1A1A1A/FFFFFF?text=Knee+Sleeves" 
-            />
-             <ProductCard 
-              id="placeholder-4" 
-              name="Vyro Lifting Belt" 
-              price={3999} 
-              image="https://placehold.co/600x600/1A1A1A/FFFFFF?text=Lifting+Belt" 
-            />
-          </div>
-        </div>
-      </section>
 
       {/* Customer Reviews Section */}
       <section className="py-24">
@@ -256,10 +261,18 @@ export default function ProductPage() {
           >
             <div className="container mx-auto flex items-center justify-between gap-4">
               <div className="hidden md:flex items-center gap-4">
-                <div className="w-16 h-16 bg-secondary rounded-sm bg-cover bg-center" style={{ backgroundImage: `url(${productData.images[0]})` }} />
+                <div className="w-16 h-16 bg-secondary rounded-sm bg-cover bg-center" style={{
+  backgroundImage: `url(${
+    product?.product_images?.[0]
+      ? supabase.storage
+          .from("products")
+          .getPublicUrl(product.product_images[0].image_url).data.publicUrl
+      : ""
+  })`,
+}} />
                 <div>
-                  <h4 className="font-heading text-xl uppercase">{productData.name}</h4>
-                  <div className="font-mono text-primary font-bold">₹{productData.price}</div>
+                  <h4 className="font-heading text-xl uppercase">{product?.name}</h4>
+                  <div className="font-mono text-primary font-bold">₹{product?.price}</div>
                 </div>
               </div>
               
