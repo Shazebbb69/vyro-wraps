@@ -1,3 +1,4 @@
+// frontend/app/products/[slug]/page.tsx
 "use client"
 
 import * as React from "react"
@@ -14,54 +15,84 @@ import { Badge } from "@/components/ui/badge"
 
 import { reviewsData } from "@/data/mock";
 
-export default function ProductPage() {
+interface ProductPageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+export default function ProductPage({ params }: ProductPageProps) {
+  const { slug } = React.use(params);
+
   const [quantity, setQuantity] = React.useState(1)
   const [product, setProduct] = React.useState<any>(null);
-const [selectedVariant, setSelectedVariant] = React.useState<any>({});
+  const [selectedVariant, setSelectedVariant] = React.useState<any>({});
   const [isStickyVisible, setIsStickyVisible] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(true)
+  const [notFound, setNotFound] = React.useState(false)
 
   React.useEffect(() => {
     const fetchProduct = async () => {
-  const { data, error } = await supabase
-  
-    .from("products")
-    .select(`
+      setIsLoading(true);
+      setNotFound(false);
+
+      const { data, error } = await supabase
+        .from("products")
+        .select(`
   *,
   product_images(*),
   product_variants(*)
 `)
-    .limit(1)
+        .eq("slug", slug)
+        .single();
 
+      console.log("DATA:", data);
+      console.log("ERROR:", error);
 
-    console.log("DATA:", data);
-    console.log(
-  supabase.storage
-    .from("products")
-    .getPublicUrl("vyro-wraps/main-product.jpg")
-);
-console.log("ERROR:", error);
-  if (!error && data) {
-   const product = data[0];
+      if (error || !data) {
+        setProduct(null);
+        setNotFound(true);
+        setIsLoading(false);
+        return;
+      }
 
-setProduct(product);
+      setProduct(data);
 
-if (product?.product_variants?.length > 0) {
-  setSelectedVariant(product.product_variants[0]);
-}
-  }
-};
+      if (data?.product_variants?.length > 0) {
+        setSelectedVariant(data.product_variants[0]);
+      }
 
-fetchProduct();
+      setIsLoading(false);
+    };
+
+    fetchProduct();
+
     const handleScroll = () => {
       // Show sticky cart when scrolled past main add to cart button
       setIsStickyVisible(window.scrollY > 800)
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  }, [slug])
 
   const increaseQuantity = () => setQuantity(prev => prev + 1)
   const decreaseQuantity = () => setQuantity(prev => prev > 1 ? prev - 1 : 1)
+
+  if (notFound) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center px-4 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold font-heading uppercase tracking-wide text-foreground mb-4">
+          Product Not Found
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-md mb-8">
+          The product you're looking for doesn't exist or may have been removed.
+        </p>
+        <Button size="lg" onClick={() => window.history.back()}>
+          Go Back
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen">

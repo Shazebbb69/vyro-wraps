@@ -58,7 +58,7 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link href="/product" className="w-full sm:w-auto">
+              <Link href="/products" className="w-full sm:w-auto">
                 <Button size="lg" className="w-full sm:w-auto min-w-50">
                   Shop Now
                 </Button>
@@ -178,7 +178,7 @@ export default function HomePage() {
                 ))}
               </ul>
 
-              <Link href="/product" className="inline-block mt-4">
+              <Link href="/products" className="inline-block mt-4">
                 <Button size="lg" className="gap-2">
                   View Full Specs <ArrowRight className="w-4 h-4" />
                 </Button>

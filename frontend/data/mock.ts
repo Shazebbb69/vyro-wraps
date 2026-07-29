@@ -35,31 +35,60 @@ export const productData = {
     { step: 4, title: "Twist", description: "Twist the bar to tighten the strap securely before lifting." }
   ]
 };
-
 export const reviewsData = [
   {
     id: "r1",
-    author: "Rahul S.",
+    author: "Aman S.",
     rating: 5,
-    date: "2023-10-15",
-    title: "Game changer for deadlifts",
-    content: "These straps are incredible. The self-applying feature saves so much time between sets. Highly recommend to any serious lifter."
+    date: "2026-07-28",
+    title: "Best lifting straps I've used",
+    content:
+      "The self-applying design is honestly brilliant. My grip gives out way later now, and the straps feel extremely comfortable even during heavy deadlifts."
   },
   {
     id: "r2",
-    author: "Amit P.",
+    author: "Aditya M.",
     rating: 5,
-    date: "2023-09-22",
+    date: "2026-07-28",
     title: "Premium quality",
-    content: "You can feel the quality right out of the box. The foam padding makes heavy shrugs completely pain-free for my wrists."
+    content:
+      "Excellent stitching and premium material. I've used them for pull-ups, rows, and shrugs for weeks now, and they still look brand new."
   },
   {
     id: "r3",
-    author: "Vikram K.",
+    author: "Shazeb S.",
+    rating: 5,
+    date: "2026-07-28",
+    title: "Worth every rupee",
+    content:
+      "Very comfortable around the wrists and extremely easy to wrap around the bar. Definitely helped me lift heavier without worrying about grip."
+  },
+  {
+    id: "r4",
+    author: "Rohan K.",
     rating: 4,
-    date: "2023-08-10",
-    title: "Very durable",
-    content: "I've been using these for 6 months heavily and there is zero sign of fraying. The grip is solid."
+    date: "2026-07-28",
+    title: "Solid purchase",
+    content:
+      "Great straps with excellent grip. Took me one workout to get used to the self-applying mechanism, but after that they worked perfectly."
+  },
+  {
+    id: "r5",
+    author: "Arjun P.",
+    rating: 5,
+    date: "2026-07-28",
+    title: "Highly recommended",
+    content:
+      "The quality exceeded my expectations. They're comfortable, durable, and give me much more confidence during heavy back workouts."
+  },
+  {
+    id: "r6",
+    author: "Karan D.",
+    rating: 5,
+    date: "2026-07-28",
+    title: "Excellent grip support",
+    content:
+      "No wrist discomfort even after long sessions. These straps have become a permanent part of my gym bag."
   }
 ];
 
