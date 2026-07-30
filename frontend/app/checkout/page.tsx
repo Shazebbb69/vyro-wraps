@@ -3,15 +3,18 @@
 import * as React from "react"
 import Link from "next/link"
 import { ChevronLeft, ShieldCheck, Lock } from "lucide-react"
-
+import { supabase } from "@/lib/supabase";
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useCart } from "@/store/cart";
 import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation";
+
 
 export default function CheckoutPage() {
   const { toast } = useToast();
+  const router = useRouter();
 const { items, clearCart } = useCart();
 
 console.log(items);
@@ -67,15 +70,81 @@ if (items.length === 0) {
       order_id: order.id,
 
       handler: async function (response: any) {
-        console.log("Payment Successful!", response);
-
-        toast({
-          title: "Payment Successful 🎉",
-          description: "Verifying your payment...",
-        });
-
-        // We'll verify the payment and save the order in the next step.
+  try {
+    const verifyResponse = await fetch("/api/razorpay/verify-payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+  ...response,
+  total,
+  cartItems: items,
+}),
+    });
+
+    const result = await verifyResponse.json();
+
+    if (!result.success) {
+      toast({
+        title: "Payment Verification Failed",
+        description: result.error,
+        variant: "destructive",
+      });
+
+      return;
+    }
+
+    toast({
+      title: "Payment Verified ✅",
+      description: "Your payment has been verified successfully.",
+    });
+
+    clearCart();
+    router.push("/order-success");
+
+    console.log("Verified Payment:", response);
+const {
+  data: { session },
+} = await supabase.auth.getSession();
+
+console.log("Current Session:", session);
+//     const { data: orderData, error: orderError } = await supabase
+//   .from("orders")
+//   .insert({
+//     total,
+//     payment_status: "paid",
+//     order_status: "pending",
+//     razorpay_order_id: response.razorpay_order_id,
+//     razorpay_payment_id: response.razorpay_payment_id,
+//   })
+//   .select()
+//   .single();
+
+// if (orderError) {
+//   console.log("Order Error:", JSON.stringify(orderError, null, 2));
+// console.log("Order Data:", orderData);
+
+// toast({
+//   title: "Order Save Failed",
+//   description: orderError?.message || "Unknown error",
+//   variant: "destructive",
+// });
+
+//   return;
+// }
+
+// console.log("Saved Order:", orderData);
+  } catch (err) {
+    console.error(err);
+
+    toast({
+      title: "Verification Error",
+      description: "Something went wrong while verifying your payment.",
+      variant: "destructive",
+    });
+  }
+},
 
       theme: {
         color: "#000000",
