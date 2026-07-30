@@ -51,7 +51,13 @@ const { data, error } = await supabase
 console.log("Deleted rows:", data);
 console.log("Delete error:", error);
 
-if (error) throw error;
+if (error) {
+  console.error(error);
+  return NextResponse.json(
+    { success: false, error },
+    { status: 500 }
+  );
+}
 
 return NextResponse.json({
   success: true,
