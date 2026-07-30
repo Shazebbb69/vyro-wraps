@@ -3,43 +3,32 @@
 import * as React from "react"
 import Link from "next/link"
 import { Trash2, Minus, Plus, ArrowRight, ShieldCheck } from "lucide-react"
-
+import { useCart, type CartItem } from "@/store/cart"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { productData } from "@/data/mock"
-
-// Mock cart items based on our product data
-const initialCartItems = [
-  {
-    id: "item-1",
-    product: productData,
-    variant: productData.variants[0],
-    quantity: 2,
-  },
-  {
-    id: "item-2",
-    product: productData,
-    variant: productData.variants[1],
-    quantity: 1,
-  }
-]
 
 export default function CartPage() {
-  const [items, setItems] = React.useState(initialCartItems)
+  const {
+    items,
+    removeFromCart,
+    updateQuantity,
+  } = useCart()
   const [promoCode, setPromoCode] = React.useState("")
 
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity < 1) return
-    setItems(items.map(item => item.id === id ? { ...item, quantity: newQuantity } : item))
+  const handleQuantityChange = (item: CartItem, newQuantity: number) => {
+    if (newQuantity < 1) {
+      removeFromCart(item.productId, item.variantId)
+      return
+    }
+    updateQuantity(item.productId, item.variantId, newQuantity)
   }
 
-  const removeItem = (id: string) => {
-    setItems(items.filter(item => item.id !== id))
-  }
-
-  const subtotal = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
-  const shipping = subtotal > 1500 ? 0 : 150 // Free shipping over 1500
-  const total = subtotal + shipping
+  const subtotal = items.reduce(
+    (sum: number, item: CartItem) => sum + item.price * item.quantity,
+    0
+  )
+  const shipping = subtotal
+  const total = subtotal
 
   if (items.length === 0) {
     return (
@@ -49,7 +38,7 @@ export default function CartPage() {
             Your <span className="text-primary">Cart</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8">Your cart is currently empty.</p>
-          <Link href="/product">
+          <Link href="/products">
             <Button size="lg" className="px-8 h-14 text-lg">Continue Shopping</Button>
           </Link>
         </div>
@@ -75,47 +64,50 @@ export default function CartPage() {
 
             <div className="space-y-6 pt-6">
               {items.map((item) => (
-                <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center border-b border-border/30 pb-6 last:border-0 last:pb-0">
-                  
+                <div
+                  key={`${item.productId}-${item.variantId}`}
+                  className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center border-b border-border/30 pb-6 last:border-0 last:pb-0"
+                >
+
                   {/* Product Details */}
                   <div className="col-span-1 md:col-span-6 flex gap-4">
                     <div className="w-24 h-24 bg-secondary rounded-sm overflow-hidden shrink-0 border border-border/50">
-                      <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${item.product.images[0]})` }} />
+                      <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${item.image})` }} />
                     </div>
                     <div className="flex flex-col justify-center">
                       <Link href="/product" className="font-bold text-lg hover:text-primary transition-colors font-heading tracking-wide uppercase line-clamp-1">
-                        {item.product.name}
+                        {item.name}
                       </Link>
                       <div className="text-muted-foreground text-sm flex items-center gap-2 mt-1">
                         <span>Color:</span>
                         <div className="flex items-center gap-1">
-                          <div className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: item.variant.color }} />
-                          {item.variant.name}
+                          <div className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: item.variantColor }} />
+                          {item.variantName}
                         </div>
                       </div>
-                      <div className="font-mono mt-2 md:hidden">₹{item.product.price}</div>
+                      <div className="font-mono mt-2 md:hidden">₹{item.price}</div>
                     </div>
                   </div>
 
                   {/* Quantity Controls */}
                   <div className="col-span-1 md:col-span-3 flex items-center justify-between md:justify-center">
                     <div className="flex items-center border border-border rounded-sm bg-background">
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      <button
+                        onClick={() => handleQuantityChange(item, item.quantity - 1)}
                         className="p-2 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
                       <span className="w-10 text-center font-mono text-sm font-bold">{item.quantity}</span>
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      <button
+                        onClick={() => handleQuantityChange(item, item.quantity + 1)}
                         className="p-2 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
                       >
                         <Plus className="w-4 h-4" />
                       </button>
                     </div>
-                    <button 
-                      onClick={() => removeItem(item.id)}
+                    <button
+                      onClick={() => removeFromCart(item.productId, item.variantId)}
                       className="md:hidden text-destructive p-2 hover:bg-destructive/10 rounded-sm transition-colors"
                     >
                       <Trash2 className="w-5 h-5" />
@@ -125,17 +117,17 @@ export default function CartPage() {
                   {/* Total & Remove Desktop */}
                   <div className="col-span-1 md:col-span-3 flex items-center justify-between md:justify-end gap-4">
                     <div className="font-mono text-xl font-bold hidden md:block">
-                      ₹{item.product.price * item.quantity}
+                      ₹{item.price * item.quantity}
                     </div>
-                    <button 
-                      onClick={() => removeItem(item.id)}
+                    <button
+                      onClick={() => removeFromCart(item.productId, item.variantId)}
                       className="hidden md:flex text-muted-foreground hover:text-destructive p-2 rounded-sm transition-colors"
                       aria-label="Remove item"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
-                  
+
                 </div>
               ))}
             </div>
@@ -147,16 +139,16 @@ export default function CartPage() {
               <h2 className="text-2xl font-bold font-heading uppercase tracking-wider mb-6 pb-4 border-b border-border/50">
                 Order Summary
               </h2>
-              
+
               <div className="space-y-4 mb-6 text-lg">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span className="font-mono font-bold">₹{subtotal}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Shipping</span>
+                  
                   <span className="font-mono font-bold">
-                    {shipping === 0 ? <span className="text-success uppercase tracking-wider text-sm font-heading">Free</span> : `₹${shipping}`}
+
                   </span>
                 </div>
                 {shipping > 0 && (
@@ -179,7 +171,7 @@ export default function CartPage() {
                   Proceed to Checkout <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
-              
+
               <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground font-medium">
                 <ShieldCheck className="w-4 h-4 text-primary" />
                 <span>Secure SSL Encrypted Checkout</span>

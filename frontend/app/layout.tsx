@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Bebas_Neue, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-
+import Script from "next/script";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/toaster";
@@ -43,6 +43,10 @@ export default function RootLayout({
         </main>
         <Footer />
         <Toaster />
+        <Script
+  src="https://checkout.razorpay.com/v1/checkout.js"
+  strategy="beforeInteractive"
+/>
       </body>
     </html>
   );

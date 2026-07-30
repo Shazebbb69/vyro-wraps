@@ -1,6 +1,10 @@
 // frontend/app/products/[slug]/page.tsx
 "use client"
 
+import { useRouter } from "next/navigation";
+import { useCart } from "@/store/cart";
+import { useToast } from "@/hooks/use-toast";
+
 import * as React from "react"
 import { specifications, howToUse } from "@/data/siteContent";
 import { motion, AnimatePresence } from "framer-motion"
@@ -23,6 +27,10 @@ interface ProductPageProps {
 
 export default function ProductPage({ params }: ProductPageProps) {
   const { slug } = React.use(params);
+
+  const router = useRouter();
+const { toast } = useToast();
+const { addToCart } = useCart();
 
   const [quantity, setQuantity] = React.useState(1)
   const [product, setProduct] = React.useState<any>(null);
@@ -77,7 +85,34 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   const increaseQuantity = () => setQuantity(prev => prev + 1)
   const decreaseQuantity = () => setQuantity(prev => prev > 1 ? prev - 1 : 1)
+const handleAddToCart = () => {
+  if (!product || !selectedVariant) return;
 
+  const image =
+    product.product_images?.[0]
+      ? supabase.storage
+          .from("products")
+          .getPublicUrl(product.product_images[0].image_url).data.publicUrl
+      : "";
+
+  addToCart({
+    productId: product.id,
+    name: product.name,
+    slug: product.slug,
+    price: product.price,
+    image,
+    variantId: selectedVariant.id,
+    variantName: selectedVariant.name,
+    variantColor: selectedVariant.color,
+    quantity,
+  });
+
+ alert("Added to cart!");
+};
+const handleBuyNow = () => {
+  handleAddToCart();
+  router.push("/checkout");
+};
   if (notFound) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center px-4 text-center">
@@ -192,12 +227,23 @@ export default function ProductPage({ params }: ProductPageProps) {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-6">
-              <Button size="lg" variant="outline" className="w-full sm:w-1/2 gap-2 text-lg h-14 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                <ShoppingCart className="w-5 h-5" /> Add to Cart
-              </Button>
-              <Button size="lg" className="w-full sm:w-1/2 gap-2 text-lg h-14">
-                <CreditCard className="w-5 h-5" /> Buy It Now
-              </Button>
+              <Button
+  size="lg"
+  variant="outline"
+  onClick={handleAddToCart}
+  className="w-full sm:w-1/2 gap-2 text-lg h-14 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+>
+  <ShoppingCart className="w-5 h-5" />
+  Add to Cart
+</Button>
+              <Button
+  size="lg"
+  className="w-full sm:w-1/2 gap-2 text-lg h-14"
+  onClick={handleBuyNow}
+>
+  <CreditCard className="w-5 h-5" />
+  Buy It Now
+</Button>
             </div>
 
             <div className="grid grid-cols-2 gap-4 pt-8 pb-4 border-b border-border/50">

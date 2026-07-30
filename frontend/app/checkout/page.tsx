@@ -7,25 +7,93 @@ import { ChevronLeft, ShieldCheck, Lock } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { productData } from "@/data/mock"
+import { useCart } from "@/store/cart";
 import { useToast } from "@/hooks/use-toast"
 
 export default function CheckoutPage() {
-  const { toast } = useToast()
+  const { toast } = useToast();
+const { items, clearCart } = useCart();
+
+console.log(items);
   
-  // Mock data for checkout summary
-  const subtotal = 1498 // 2 items at 749
-  const shipping = 150
+  const subtotal = items.reduce(
+  (sum, item) => sum + item.price * item.quantity,
+  0
+);
+  const [shipping, setShipping] = React.useState(0);
+  
   const total = subtotal + shipping
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
-    e.preventDefault()
+const [pincode, setPincode] = React.useState("");
+if (items.length === 0) {
+  return (
+    <div className="container mx-auto py-24 text-center">
+      <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
+      <p className="text-muted-foreground mb-6">
+        Add some products before checking out.
+      </p>
+      <Link href="/products">
+        <Button>Continue Shopping</Button>
+      </Link>
+    </div>
+  );
+}
+  const handlePlaceOrder = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch("/api/razorpay/create-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: total,
+      }),
+    });
+
+    const order = await response.json();
+
+    if (!response.ok) {
+      throw new Error(order.error || "Failed to create order");
+    }
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: "Vyro Wraps",
+      description: "Purchase from Vyro Wraps",
+      order_id: order.id,
+
+      handler: async function (response: any) {
+        console.log("Payment Successful!", response);
+
+        toast({
+          title: "Payment Successful 🎉",
+          description: "Verifying your payment...",
+        });
+
+        // We'll verify the payment and save the order in the next step.
+      },
+
+      theme: {
+        color: "#000000",
+      },
+    };
+
+    const razorpay = new (window as any).Razorpay(options);
+    razorpay.open();
+  } catch (err: any) {
+    console.error(err);
+
     toast({
-      title: "Order Placed Successfully!",
-      description: "You will receive a confirmation email shortly.",
-    })
-    // In a real app, this would redirect to an order confirmation page
+      title: "Payment Failed",
+      description: err.message,
+      variant: "destructive",
+    });
   }
+};
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -66,9 +134,7 @@ export default function CheckoutPage() {
                 <div className="space-y-4">
                   <Input type="email" placeholder="Email Address" required className="h-12 bg-secondary" />
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <input type="checkbox" id="newsletter" className="rounded-sm border-border bg-secondary text-primary focus:ring-primary h-4 w-4" defaultChecked />
-                    <label htmlFor="newsletter">Email me with news and offers</label>
-                  </div>
+                    </div>
                 </div>
               </section>
 
@@ -88,46 +154,92 @@ export default function CheckoutPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="IN">India</SelectItem>
-                      <SelectItem value="US">United States</SelectItem>
-                      <SelectItem value="UK">United Kingdom</SelectItem>
+                      
                     </SelectContent>
                   </Select>
                   
                   <Input placeholder="State" required className="h-12 bg-secondary" />
-                  <Input placeholder="PIN Code" required className="h-12 bg-secondary" />
+                  <Input
+  placeholder="PIN Code"
+  required
+  className="h-12 bg-secondary"
+  maxLength={6}
+  value={pincode}
+  onChange={(e) => {
+  const value = e.target.value;
+  setPincode(value);
+
+  if (value.length === 6) {
+    fetch("/api/shipping-rate", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    pincode: value,
+  }),
+})
+  .then((res) => res.json())
+  .then((data) => {
+    console.log(data);
+  });
+  }
+}}
+/>
                   <Input placeholder="Phone Number" type="tel" required className="col-span-1 sm:col-span-2 h-12 bg-secondary" />
                 </div>
               </section>
 
               {/* Payment Info */}
-              <section className="space-y-6">
-                <h2 className="text-xl font-bold font-heading uppercase tracking-wide border-b border-border/50 pb-2">3. Payment</h2>
-                <p className="text-sm text-muted-foreground">All transactions are secure and encrypted.</p>
-                <div className="bg-secondary p-6 rounded-sm border border-border space-y-6">
-                  <div className="flex items-center gap-3 pb-4 border-b border-border/50">
-                    <input type="radio" id="card" name="payment" className="h-4 w-4 text-primary focus:ring-primary bg-background border-border" defaultChecked />
-                    <label htmlFor="card" className="font-medium">Credit / Debit Card</label>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <Input placeholder="Card Number" required className="h-12 bg-background font-mono" />
-                    <Input placeholder="Name on Card" required className="h-12 bg-background" />
-                    <div className="grid grid-cols-2 gap-4">
-                      <Input placeholder="Expiration Date (MM/YY)" required className="h-12 bg-background font-mono" />
-                      <Input placeholder="CVV" required className="h-12 bg-background font-mono" />
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 pt-4 border-t border-border/50">
-                    <input type="radio" id="upi" name="payment" className="h-4 w-4 text-primary focus:ring-primary bg-background border-border" />
-                    <label htmlFor="upi" className="font-medium">UPI / NetBanking</label>
-                  </div>
-                  <div className="flex items-center gap-3 pt-4 border-t border-border/50">
-                    <input type="radio" id="cod" name="payment" className="h-4 w-4 text-primary focus:ring-primary bg-background border-border" />
-                    <label htmlFor="cod" className="font-medium">Cash on Delivery</label>
-                  </div>
-                </div>
-              </section>
+              {/* Payment */}
+<section className="space-y-6">
+  <h2 className="text-xl font-bold font-heading uppercase tracking-wide border-b border-border/50 pb-2">
+    3. Payment
+  </h2>
+
+  <div className="rounded-sm border border-border bg-secondary p-6">
+    <div className="flex items-center gap-3">
+      <ShieldCheck className="h-6 w-6 text-primary" />
+
+      <div>
+        <h3 className="font-semibold">
+          Secure Payment via Razorpay
+        </h3>
+
+        <p className="mt-1 text-sm text-muted-foreground">
+          Pay securely using Credit/Debit Cards, UPI, NetBanking,
+          Wallets and more.
+        </p>
+      </div>
+    </div>
+
+    <div className="mt-6 flex flex-wrap gap-3">
+      <span className="rounded-full border border-border px-3 py-1 text-sm">
+        Visa
+      </span>
+
+      <span className="rounded-full border border-border px-3 py-1 text-sm">
+        Mastercard
+      </span>
+
+      <span className="rounded-full border border-border px-3 py-1 text-sm">
+        RuPay
+      </span>
+
+      <span className="rounded-full border border-border px-3 py-1 text-sm">
+        UPI
+      </span>
+
+      <span className="rounded-full border border-border px-3 py-1 text-sm">
+        Wallets
+      </span>
+
+      <span className="rounded-full border border-border px-3 py-1 text-sm">
+        NetBanking
+      </span>
+    </div>
+  </div>
+</section>
 
               <Button form="checkout-form" type="submit" size="lg" className="w-full h-16 text-xl tracking-wider font-heading uppercase">
                 Place Order - ₹{total}
@@ -143,20 +255,32 @@ export default function CheckoutPage() {
               </h2>
               
               <div className="space-y-4 mb-6">
-                {/* Mock Item 1 */}
-                <div className="flex items-center gap-4">
-                  <div className="relative w-16 h-16 bg-background rounded-sm border border-border overflow-hidden shrink-0">
-                    <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${productData.images[0]})` }} />
-                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center rounded-full">
-                      2
-                    </span>
-                  </div>
-                  <div className="flex-grow">
-                    <h3 className="font-medium text-sm line-clamp-1">{productData.name}</h3>
-                    <p className="text-xs text-muted-foreground">Color: Obsidian Black</p>
-                  </div>
-                  <div className="font-mono text-sm font-bold">₹1498</div>
-                </div>
+                {items.map((item) => (
+  <div key={`${item.productId}-${item.variantId}`} className="flex items-center gap-4">
+    <div className="relative w-16 h-16 bg-background rounded-sm border border-border overflow-hidden shrink-0">
+      <div
+        className="w-full h-full bg-cover bg-center"
+        style={{ backgroundImage: `url(${item.image})` }}
+      />
+      <span className="absolute -top-2 -right-2 w-5 h-5 bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center rounded-full">
+        {item.quantity}
+      </span>
+    </div>
+
+    <div className="grow">
+      <h3 className="font-medium text-sm line-clamp-1">
+        {item.name}
+      </h3>
+      <p className="text-xs text-muted-foreground">
+        {item.variantName}
+      </p>
+    </div>
+
+    <div className="font-mono text-sm font-bold">
+      ₹{item.price * item.quantity}
+    </div>
+  </div>
+))}
               </div>
 
               <div className="space-y-4 mb-6 pt-6 border-t border-border/50 text-sm">

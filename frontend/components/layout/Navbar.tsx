@@ -5,7 +5,7 @@ import * as React from "react"
 import Link from "next/link"
 import { ShoppingCart, Menu } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-
+import { useCart } from "@/store/cart"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 
@@ -18,7 +18,12 @@ const navLinks = [
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = React.useState(false)
+const { items } = useCart();
 
+const cartCount = items.reduce(
+  (total, item) => total + item.quantity,
+  0
+);
   React.useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20)
@@ -74,9 +79,11 @@ export function Navbar() {
               <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-primary">
                 <ShoppingCart className="h-5 w-5" />
                 <span className="sr-only">Cart</span>
-                <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground font-mono">
-                  0
-                </span>
+                {cartCount > 0 && (
+  <span className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground font-mono">
+    {cartCount}
+  </span>
+)}
               </Button>
             </Link>
 
