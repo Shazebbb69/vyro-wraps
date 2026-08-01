@@ -6,6 +6,7 @@ import {
   Package,
   ShoppingCart,
   LogOut,
+  TicketPercent,
 } from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
@@ -60,7 +61,15 @@ export default function AdminPage() {
             </p>
           </div>
         </Link>
-
+      <Link href="/admin/coupons">
+  <div className="cursor-pointer rounded-xl border border-zinc-800 bg-zinc-900 p-6 transition hover:border-primary hover:-translate-y-1">
+    <TicketPercent className="mb-4 text-primary" size={34} />
+    <h2 className="text-xl font-semibold">Coupons</h2>
+    <p className="mt-2 text-zinc-400">
+      Create and manage discount coupons.
+    </p>
+  </div>
+</Link>
         
       </div>
     </main>

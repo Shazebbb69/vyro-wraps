@@ -40,7 +40,7 @@ export default function ReviewsPage() {
               ))}
             </div>
             <p className="text-muted-foreground font-medium">Based on {reviewsData.length} reviews</p>
-            
+            <Button className="mt-6 w-full">Write a Review</Button>
           </div>
           
           <div className="w-full md:w-2/3 flex flex-col justify-center gap-3">

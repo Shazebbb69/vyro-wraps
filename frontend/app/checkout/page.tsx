@@ -24,10 +24,27 @@ console.log(items);
   0
 );
   const [shipping, setShipping] = React.useState(0);
-  
-  const total = subtotal + shipping
+
+const [discount, setDiscount] = React.useState(0);
+
+const total = subtotal + shipping - discount;
 
 const [pincode, setPincode] = React.useState("");
+const [couponCode, setCouponCode] = React.useState("");
+const [applyingCoupon, setApplyingCoupon] = React.useState(false);
+const [checkoutForm, setCheckoutForm] = React.useState({
+  firstName: "",
+  lastName: "",
+  email: "",
+  addressLine1: "",
+  addressLine2: "",
+  city: "",
+  state: "",
+  country: "India",
+  phone: "",
+postalCode: "",
+});
+
 if (items.length === 0) {
   return (
     <div className="container mx-auto py-24 text-center">
@@ -41,6 +58,59 @@ if (items.length === 0) {
     </div>
   );
 }
+
+async function handleApplyCoupon() {
+  try {
+    setApplyingCoupon(true);
+
+    const res = await fetch("/api/coupons/apply", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+  code: couponCode,
+  subtotal,
+}),
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      alert(data.error);
+      setApplyingCoupon(false);
+      return;
+    }
+
+    const coupon = data.coupon;
+
+let calculatedDiscount = 0;
+
+if (coupon.discount_type === "percentage") {
+  calculatedDiscount = (subtotal * coupon.discount_value) / 100;
+
+  if (
+    coupon.maximum_discount &&
+    calculatedDiscount > coupon.maximum_discount
+  ) {
+    calculatedDiscount = coupon.maximum_discount;
+  }
+} else {
+  calculatedDiscount = coupon.discount_value;
+}
+
+setDiscount(calculatedDiscount);
+
+alert("Coupon applied successfully!");
+
+setApplyingCoupon(false);
+  } catch (err) {
+    console.error(err);
+    alert("Failed to apply coupon.");
+    setApplyingCoupon(false);
+  }
+}
+
   const handlePlaceOrder = async (e: React.FormEvent) => {
   e.preventDefault();
 
@@ -69,7 +139,7 @@ if (items.length === 0) {
       description: "Purchase from Vyro Wraps",
       order_id: order.id,
 
-      handler: async function (response: any) {
+  handler: async function (response: any) {
   try {
     const verifyResponse = await fetch("/api/razorpay/verify-payment", {
       method: "POST",
@@ -77,10 +147,13 @@ if (items.length === 0) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-  ...response,
-  total,
-  cartItems: items,
-}),
+        ...response,
+        total,
+        cartItems: items,
+        checkoutForm,
+        couponCode,
+        discount,
+      }),
     });
 
     const result = await verifyResponse.json();
@@ -91,7 +164,6 @@ if (items.length === 0) {
         description: result.error,
         variant: "destructive",
       });
-
       return;
     }
 
@@ -102,39 +174,6 @@ if (items.length === 0) {
 
     clearCart();
     router.push("/order-success");
-
-    console.log("Verified Payment:", response);
-const {
-  data: { session },
-} = await supabase.auth.getSession();
-
-console.log("Current Session:", session);
-//     const { data: orderData, error: orderError } = await supabase
-//   .from("orders")
-//   .insert({
-//     total,
-//     payment_status: "paid",
-//     order_status: "pending",
-//     razorpay_order_id: response.razorpay_order_id,
-//     razorpay_payment_id: response.razorpay_payment_id,
-//   })
-//   .select()
-//   .single();
-
-// if (orderError) {
-//   console.log("Order Error:", JSON.stringify(orderError, null, 2));
-// console.log("Order Data:", orderData);
-
-// toast({
-//   title: "Order Save Failed",
-//   description: orderError?.message || "Unknown error",
-//   variant: "destructive",
-// });
-
-//   return;
-// }
-
-// console.log("Saved Order:", orderData);
   } catch (err) {
     console.error(err);
 
@@ -198,10 +237,21 @@ console.log("Current Session:", session);
               <section className="space-y-6">
                 <div className="flex justify-between items-end border-b border-border/50 pb-2">
                   <h2 className="text-xl font-bold font-heading uppercase tracking-wide">1. Contact Information</h2>
-                  <span className="text-sm text-muted-foreground">Already have an account? <Link href="/login" className="text-primary hover:underline">Log in</Link></span>
-                </div>
+                   </div>
                 <div className="space-y-4">
-                  <Input type="email" placeholder="Email Address" required className="h-12 bg-secondary" />
+                  <Input
+  type="email"
+  placeholder="Email Address"
+  required
+  className="h-12 bg-secondary"
+  value={checkoutForm.email}
+  onChange={(e) =>
+    setCheckoutForm({
+      ...checkoutForm,
+      email: e.target.value,
+    })
+  }
+/>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     </div>
                 </div>
@@ -211,11 +261,65 @@ console.log("Current Session:", session);
               <section className="space-y-6">
                 <h2 className="text-xl font-bold font-heading uppercase tracking-wide border-b border-border/50 pb-2">2. Shipping Address</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Input placeholder="First Name" required className="h-12 bg-secondary" />
-                  <Input placeholder="Last Name" required className="h-12 bg-secondary" />
-                  <Input placeholder="Address Line 1" required className="col-span-1 sm:col-span-2 h-12 bg-secondary" />
-                  <Input placeholder="Apartment, suite, etc. (optional)" className="col-span-1 sm:col-span-2 h-12 bg-secondary" />
-                  <Input placeholder="City" required className="h-12 bg-secondary" />
+                  <Input
+  placeholder="First Name"
+  required
+  className="h-12 bg-secondary"
+  value={checkoutForm.firstName}
+  onChange={(e) =>
+    setCheckoutForm({
+      ...checkoutForm,
+      firstName: e.target.value,
+    })
+  }
+/>
+                  <Input
+  placeholder="Last Name"
+  required
+  className="h-12 bg-secondary"
+  value={checkoutForm.lastName}
+  onChange={(e) =>
+    setCheckoutForm({
+      ...checkoutForm,
+      lastName: e.target.value,
+    })
+  }
+/>
+                  <Input
+  placeholder="Address Line 1"
+  required
+  className="col-span-1 sm:col-span-2 h-12 bg-secondary"
+  value={checkoutForm.addressLine1}
+  onChange={(e) =>
+    setCheckoutForm({
+      ...checkoutForm,
+      addressLine1: e.target.value,
+    })
+  }
+/>
+                  <Input
+  placeholder="Apartment, suite, etc. (optional)"
+  className="col-span-1 sm:col-span-2 h-12 bg-secondary"
+  value={checkoutForm.addressLine2}
+  onChange={(e) =>
+    setCheckoutForm({
+      ...checkoutForm,
+      addressLine2: e.target.value,
+    })
+  }
+/>
+                  <Input
+  placeholder="City"
+  required
+  className="h-12 bg-secondary"
+  value={checkoutForm.city}
+  onChange={(e) =>
+    setCheckoutForm({
+      ...checkoutForm,
+      city: e.target.value,
+    })
+  }
+/>
                   
                   <Select required defaultValue="IN">
                     <SelectTrigger className="h-12 bg-secondary">
@@ -227,7 +331,18 @@ console.log("Current Session:", session);
                     </SelectContent>
                   </Select>
                   
-                  <Input placeholder="State" required className="h-12 bg-secondary" />
+                  <Input
+  placeholder="State"
+  required
+  className="h-12 bg-secondary"
+  value={checkoutForm.state}
+  onChange={(e) =>
+    setCheckoutForm({
+      ...checkoutForm,
+      state: e.target.value,
+    })
+  }
+/>
                   <Input
   placeholder="PIN Code"
   required
@@ -237,6 +352,11 @@ console.log("Current Session:", session);
   onChange={(e) => {
   const value = e.target.value;
   setPincode(value);
+
+setCheckoutForm({
+  ...checkoutForm,
+  postalCode: value,
+});
 
   if (value.length === 6) {
     fetch("/api/shipping-rate", {
@@ -255,7 +375,19 @@ console.log("Current Session:", session);
   }
 }}
 />
-                  <Input placeholder="Phone Number" type="tel" required className="col-span-1 sm:col-span-2 h-12 bg-secondary" />
+                  <Input
+  placeholder="Phone Number"
+  type="tel"
+  required
+  className="col-span-1 sm:col-span-2 h-12 bg-secondary"
+  value={checkoutForm.phone}
+  onChange={(e) =>
+    setCheckoutForm({
+      ...checkoutForm,
+      phone: e.target.value,
+    })
+  }
+/>
                 </div>
               </section>
 
@@ -351,7 +483,28 @@ console.log("Current Session:", session);
   </div>
 ))}
               </div>
+              <div className="mb-6 rounded-sm border border-border bg-background p-4">
+  <label className="mb-2 block text-sm font-medium">
+    Coupon Code
+  </label>
 
+  <div className="flex gap-2">
+    <Input
+  placeholder="Enter coupon code"
+  className="bg-secondary"
+  value={couponCode}
+  onChange={(e) => setCouponCode(e.target.value)}
+/>
+
+    <Button
+  type="button"
+  onClick={handleApplyCoupon}
+  disabled={applyingCoupon}
+>
+  {applyingCoupon ? "Applying..." : "Apply"}
+</Button>
+  </div>
+</div>
               <div className="space-y-4 mb-6 pt-6 border-t border-border/50 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
@@ -361,6 +514,16 @@ console.log("Current Session:", session);
                   <span className="text-muted-foreground">Shipping</span>
                   <span className="font-mono font-bold">₹{shipping}</span>
                 </div>
+
+                {discount > 0 && (
+  <div className="flex justify-between text-green-500">
+    <span>Discount</span>
+    <span className="font-mono font-bold">
+      -₹{discount}
+    </span>
+  </div>
+)}
+
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Taxes</span>
                   <span className="font-mono font-bold">Included</span>
