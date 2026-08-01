@@ -43,12 +43,24 @@ export default async function OrderDetailsPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-[#0b0b0b] p-8 text-white">
-      <h1 className="mb-8 text-3xl font-bold">Order Details</h1>
+      <div className="mb-8 flex items-center justify-between">
+  <h1 className="text-3xl font-bold">Order Details</h1>
 
-      <div className="space-y-4 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+  <span
+    className={`rounded-full px-4 py-2 text-sm font-semibold ${
+      order.payment_status === "paid"
+        ? "bg-green-500/20 text-green-400"
+        : "bg-red-500/20 text-red-400"
+    }`}
+  >
+    {order.payment_status.toUpperCase()}
+  </span>
+</div>
+
+      <div className="space-y-6 rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-xl">
         <div>
           <span className="text-zinc-400">Order ID:</span>
-          <p>{order.id}</p>
+<p className="break-all font-mono text-sm">{order.id}</p>
         </div>
 
         <div>
@@ -70,15 +82,63 @@ export default async function OrderDetailsPage({ params }: PageProps) {
 />
         </div>
 
-        <div>
-          <span className="text-zinc-400">Tracking Number:</span>
-          <p>{order.tracking_number || "Not assigned"}</p>
-        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+  <div>
+    <span className="text-zinc-400">Tracking Number:</span>
+    <p>{order.tracking_number || "Not assigned"}</p>
+  </div>
+
+  <div>
+    <span className="text-zinc-400">Courier:</span>
+    <p>{order.courier_name || "Not assigned"}</p>
+  </div>
+
+  <div>
+    <span className="text-zinc-400">AWB Number:</span>
+    <p>{order.awb_number || "Not assigned"}</p>
+  </div>
+
+  <div>
+    <span className="text-zinc-400">Shipping Status:</span>
+    <p className="capitalize">
+      {order.shipping_status || "Pending"}
+    </p>
+  </div>
+</div>
 
         <div>
           <span className="text-zinc-400">Created:</span>
           <p>{new Date(order.created_at).toLocaleString()}</p>
         </div>
+
+        <div className="border-t border-zinc-800 pt-4">
+  <h2 className="mb-4 text-xl font-semibold">
+    Shipment Information
+  </h2>
+
+  <div className="space-y-2">
+    <p>
+      <span className="text-zinc-400">Shipment ID:</span>{" "}
+      {order.shipment_id || "Not created"}
+    </p>
+
+    <p>
+      <span className="text-zinc-400">Tracking URL:</span>{" "}
+      {order.tracking_url ? (
+        <a
+          href={order.tracking_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-400 underline"
+        >
+          Open Shipping Label
+        </a>
+      ) : (
+        "Not available"
+      )}
+    </p>
+  </div>
+</div>
 
         <div className="border-t border-zinc-800 pt-4">
           <h2 className="mb-4 text-xl font-semibold">Shipping Address</h2>
@@ -101,7 +161,9 @@ export default async function OrderDetailsPage({ params }: PageProps) {
         </div>
 
         <div className="border-t border-zinc-800 pt-4">
-          <h2 className="mb-4 text-xl font-semibold">Products</h2>
+          <h2 className="mb-4 text-xl font-semibold">
+  Ordered Products ({order.order_items?.length || 0})
+</h2>
 
           <div className="space-y-3">
             {order.order_items?.length ? (

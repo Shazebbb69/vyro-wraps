@@ -21,20 +21,7 @@ async function updateStatus(value: string) {
   setStatus(value);
   setLoading(true);
 
-  await fetch("/api/admin/orders/update-status", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      orderId,
-      orderStatus: value,
-    }),
-  });
-
-  setLoading(false);
-
-  console.log("Fetch completed");
+  
   const res = await fetch("/api/admin/orders/update-status", {
   method: "POST",
   headers: {
@@ -47,6 +34,11 @@ async function updateStatus(value: string) {
 });
 
 const data = await res.json();
+setLoading(false);
+
+if (data.success) {
+  router.refresh();
+}
 console.log(data);
 }
 

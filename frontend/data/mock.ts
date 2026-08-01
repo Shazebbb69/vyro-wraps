@@ -1,46 +1,9 @@
-export const productData = {
-  id: "vw-straps-01",
-  name: "Vyro Wraps Self-Applying Lifting Straps",
-  price: 1999,
-  originalPrice: 2499,
-  description: "Experience maximum support and enhanced grip with our premium self-applying lifting straps. Designed for heavy lifters, these straps are built to last and engineered for comfort.",
-  stockStatus: "In Stock",
-  images: [
-    "/placeholder/product-1.jpg",
-    "/placeholder/product-2.jpg",
-    "/placeholder/product-3.jpg",
-    "/placeholder/product-4.jpg"
-  ],
-  variants: [
-    { id: "v1", name: "Classic Black", color: "#000000" },
-    { id: "v2", name: "Vyro Gold", color: "#D69E2E" }
-  ],
-  specifications: [
-    { label: "Material", value: "High-density premium cotton" },
-    { label: "Length", value: "24 inches" },
-    { label: "Weight", value: "150g per pair" },
-    { label: "Compatibility", value: "Olympic barbells, dumbbells, pull-up bars" },
-    { label: "Care Instructions", value: "Hand wash cold, air dry. Do not machine wash." }
-  ],
-  benefits: [
-    { title: "Maximum Support", description: "Locks your grip securely so you can focus on the pull." },
-    { title: "Enhanced Grip", description: "Textured surface prevents slipping during max effort sets." },
-    { title: "Self Applying", description: "Innovative design allows for quick one-handed setup." },
-    { title: "Built To Last", description: "Reinforced stitching withstands over 500lbs of tension." }
-  ],
-  howToUse: [
-    { step: 1, title: "Loop", description: "Pass the end of the strap through the loop to create a circle." },
-    { step: 2, title: "Wear", description: "Slide your hand through the circle so the strap rests on your wrist." },
-    { step: 3, title: "Wrap", description: "Wrap the loose end around the bar in the opposite direction of your fingers." },
-    { step: 4, title: "Twist", description: "Twist the bar to tighten the strap securely before lifting." }
-  ]
-};
 export const reviewsData = [
   {
     id: "r1",
     author: "Aman S.",
     rating: 5,
-    date: "2026-07-28",
+    date: "2026-07-30",
     title: "Best lifting straps I've used",
     content:
       "The self-applying design is honestly brilliant. My grip gives out way later now, and the straps feel extremely comfortable even during heavy deadlifts."
@@ -48,17 +11,17 @@ export const reviewsData = [
   {
     id: "r2",
     author: "Aditya M.",
-    rating: 5,
-    date: "2026-07-28",
+    rating: 4.5,
+    date: "2026-07-25",
     title: "Premium quality",
     content:
-      "Excellent stitching and premium material. I've used them for pull-ups, rows, and shrugs for weeks now, and they still look brand new."
+      "Excellent stitching and premium material. I've used them for pull-ups, rows and shrugs for weeks now, and they still look brand new."
   },
   {
     id: "r3",
     author: "Shazeb S.",
     rating: 5,
-    date: "2026-07-28",
+    date: "2026-07-20",
     title: "Worth every rupee",
     content:
       "Very comfortable around the wrists and extremely easy to wrap around the bar. Definitely helped me lift heavier without worrying about grip."
@@ -67,7 +30,7 @@ export const reviewsData = [
     id: "r4",
     author: "Rohan K.",
     rating: 4,
-    date: "2026-07-28",
+    date: "2026-07-14",
     title: "Solid purchase",
     content:
       "Great straps with excellent grip. Took me one workout to get used to the self-applying mechanism, but after that they worked perfectly."
@@ -76,76 +39,108 @@ export const reviewsData = [
     id: "r5",
     author: "Arjun P.",
     rating: 5,
-    date: "2026-07-28",
+    date: "2026-07-08",
     title: "Highly recommended",
     content:
-      "The quality exceeded my expectations. They're comfortable, durable, and give me much more confidence during heavy back workouts."
+      "The quality exceeded my expectations. They're comfortable, durable and give me much more confidence during heavy back workouts."
   },
   {
     id: "r6",
     author: "Karan D.",
-    rating: 5,
-    date: "2026-07-28",
+    rating: 4.5,
+    date: "2026-07-02",
     title: "Excellent grip support",
     content:
       "No wrist discomfort even after long sessions. These straps have become a permanent part of my gym bag."
-  }
-];
-
-export const faqData = [
-  {
-    question: "How do self-applying straps work?",
-    answer: "Our straps feature a specialized reinforced loop that stays open, allowing you to easily slide the end through and wrap it around the bar with one hand."
   },
   {
-    question: "Are they suitable for beginners?",
-    answer: "Yes! While designed for heavy lifting, beginners can benefit from using straps to isolate back muscles without grip failure."
+    id: "r7",
+    author: "Rahul V.",
+    rating: 5,
+    date: "2026-06-29",
+    title: "Deadlift PR unlocked",
+    content:
+      "Hit a new deadlift personal best this week. The straps stayed locked throughout the lift and felt incredibly secure."
   },
   {
-    question: "How do I clean my Vyro Wraps?",
-    answer: "We recommend hand washing in cold water with mild detergent. Do not machine wash or tumble dry as it may compromise the stitching."
+    id: "r8",
+    author: "Nikhil G.",
+    rating: 4,
+    date: "2026-06-24",
+    title: "Comfortable for long workouts",
+    content:
+      "I've used several lifting straps before, but these are by far the most comfortable on the wrists during longer training sessions."
   },
   {
-    question: "What is your return policy?",
-    answer: "We offer a 7-day no-questions-asked return policy for unused items in original packaging."
-  }
-];
-
-export const userProfileData = {
-  name: "Arjun Kumar",
-  email: "arjun.k@example.com",
-  phone: "+91 9876543210",
-  memberSince: "2023-01-15",
-  addresses: [
-    {
-      id: "a1",
-      type: "Home",
-      street: "123 Fitness Ave, Block A",
-      city: "Mumbai",
-      state: "Maharashtra",
-      pincode: "400001",
-      isDefault: true
-    }
-  ]
-};
-
-export const ordersData = [
-  {
-    id: "ORD-59281",
-    date: "2023-11-05",
-    total: 1999,
-    status: "Delivered",
-    items: [
-      { name: "Vyro Wraps - Classic Black", quantity: 1, price: 1999 }
-    ]
+    id: "r9",
+    author: "Yash T.",
+    rating: 5,
+    date: "2026-06-18",
+    title: "Feels premium",
+    content:
+      "The stitching, fabric and overall finish are excellent. Doesn't feel like a cheap gym accessory at all."
   },
   {
-    id: "ORD-48192",
-    date: "2023-05-12",
-    total: 1999,
-    status: "Delivered",
-    items: [
-      { name: "Vyro Wraps - Vyro Gold", quantity: 1, price: 1999 }
-    ]
+    id: "r10",
+    author: "Vivek R.",
+    rating: 4.5,
+    date: "2026-06-10",
+    title: "Great for pull day",
+    content:
+      "Rows, pull-ups, rack pulls and shrugs feel much easier now since grip isn't the limiting factor anymore."
+  },
+  {
+    id: "r11",
+    author: "Siddharth B.",
+    rating: 5,
+    date: "2026-06-03",
+    title: "Easy to learn",
+    content:
+      "I had never used self-applying straps before, but after watching a quick tutorial they became incredibly easy to use."
+  },
+  {
+    id: "r12",
+    author: "Harsh M.",
+    rating: 4,
+    date: "2026-05-27",
+    title: "Very durable",
+    content:
+      "Been using these for almost two months now. No loose threads or signs of wear despite training five days a week."
+  },
+  {
+    id: "r13",
+    author: "Pranav C.",
+    rating: 5,
+    date: "2026-05-18",
+    title: "Exactly what I needed",
+    content:
+      "My forearms usually fail before my back. These straps completely solved that problem."
+  },
+  {
+    id: "r14",
+    author: "Akshay N.",
+    rating: 4.5,
+    date: "2026-05-09",
+    title: "Strong grip",
+    content:
+      "The grip feels secure even during heavy Romanian deadlifts. Very happy with the purchase."
+  },
+  {
+    id: "r15",
+    author: "Manav J.",
+    rating: 5,
+    date: "2026-04-30",
+    title: "Excellent build quality",
+    content:
+      "You can immediately tell these aren't ordinary straps. The material feels premium and extremely durable."
+  },
+  {
+    id: "r16",
+    author: "Dev A.",
+    rating: 4.5,
+    date: "2026-04-18",
+    title: "Will buy again",
+    content:
+      "Bought one pair for myself and another for my training partner. Both of us have been impressed with the comfort and grip."
   }
 ];

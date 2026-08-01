@@ -34,10 +34,10 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero */}
-      <section className="relative h-[90vh] min-h-150 flex items-center justify-center overflow-hidden">
+      <section className="relative h-screen min-h-[850px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div
-  className="w-full h-full bg-[url('/hero.png')] bg-cover bg-center opacity-40"
+  className="w-full h-full bg-[url('/hero.png')] bg-cover bg-center_75 opacity-40"
 />
           <div className="absolute inset-0 bg-linear-to-t from-background via-background/60 to-transparent" />
         </div>
